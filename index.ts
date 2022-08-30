@@ -31,16 +31,17 @@ function initMap(): void {
   const map = new google.maps.Map(
     document.getElementById('map') as HTMLElement,
     {
-      center: { lat: 0, lng: 0 },
-      zoom: 1,
+      center: { lat: 50, lng: 50 },
+      zoom: 2,
       streetViewControl: false,
+      mapTypeControl: true,
       mapTypeControlOptions: {
-        mapTypeIds: ['moon'],
+        mapTypeIds: ['iv'],
       },
     }
   );
 
-  const moonMapType = new google.maps.ImageMapType({
+  const IVMapType = new google.maps.ImageMapType({
     getTileUrl: function (coord, zoom): string {
       const normalizedCoord = getNormalizedCoord(coord, zoom);
 
@@ -56,7 +57,8 @@ function initMap(): void {
         '/tile_' +
         normalizedCoord.x +
         '_' +
-        (bound - normalizedCoord.y - 1) +
+        //(bound - normalizedCoord.y - 1) +
+        normalizedCoord.y +
         '.png'
       );
     },
@@ -65,11 +67,40 @@ function initMap(): void {
     minZoom: 0,
     // @ts-ignore TODO 'radius' does not exist in type 'ImageMapTypeOptions'
     radius: 1738000,
-    name: 'Moon',
+    name: 'GTA IV',
+  });
+  const VMapType = new google.maps.ImageMapType({
+    getTileUrl: function (coord, zoom): string {
+      const normalizedCoord = getNormalizedCoord(coord, zoom);
+
+      if (!normalizedCoord) {
+        return '';
+      }
+
+      const bound = Math.pow(2, zoom);
+      return (
+        'https://cdn.ouranosstudios.com/atlas' +
+        '/' +
+        zoom +
+        '_' +
+        normalizedCoord.x +
+        '_' +
+        //(bound - normalizedCoord.y - 1) +
+        normalizedCoord.y +
+        '.png'
+      );
+    },
+    tileSize: new google.maps.Size(256, 256),
+    maxZoom: 7,
+    minZoom: 3,
+    // @ts-ignore TODO 'radius' does not exist in type 'ImageMapTypeOptions'
+    radius: 1738000,
+    name: 'GTA V',
   });
 
-  map.mapTypes.set('moon', moonMapType);
-  map.setMapTypeId('moon');
+  map.mapTypes.set('iv', IVMapType);
+  map.mapTypes.set('v', VMapType);
+  map.setMapTypeId('iv');
 }
 
 declare global {
